@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mini Message Board</title>
+</head>
+<body>
+    <h1>Leave a Message</h1>
+    <textarea id="messageInput" rows="3" cols="40"></textarea><br>
+    <button onclick="postMessage()">Post</button>
+
+    <h2>Messages:</h2>
+    <ul id="messageList"></ul>
+
+    <script>
+        async function postMessage() {
+            const text = document.getElementById('messageInput').value;
+            await fetch('/message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            document.getElementById('messageInput').value = '';
+            loadMessages();
+        }
+
+        async function loadMessages() {
+            const res = await fetch('/messages');
+            const data = await res.json();
+            const list = document.getElementById('messageList');
+            list.innerHTML = '';
+            data.forEach(msg => {
+                const li = document.createElement('li');
+                li.textContent = msg;
+                list.appendChild(li);
+            });
+        }
+
+        loadMessages();
+    </script>
+</body>
+</html>
